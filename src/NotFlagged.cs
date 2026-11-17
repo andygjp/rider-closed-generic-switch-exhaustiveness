@@ -67,3 +67,35 @@ public static class LightDescription
         Off => "off"
     };
 }
+
+// 6. Flagged.cs case 2, but the outer class isn't generic.
+public abstract class NonGenericHandler
+{
+    protected closed record Result;
+
+    private sealed record Continue : Result;
+
+    private sealed record HaltWith(int ReturnThis) : Result;
+
+    protected int Run(Result result, int current) => result switch
+    {
+        HaltWith halt => halt.ReturnThis,
+        Continue => current
+    };
+}
+
+// 7. Flagged.cs case 3, switched outside the outer class.
+public static class OutsideOuter
+{
+    public static string Describe<T>(Outer<T>.Result result) => result switch
+    {
+        Outer<T>.Result.A => "a",
+        Outer<T>.Result.B => "b"
+    };
+
+    public static string DescribeConstructed(Outer<int>.Result result) => result switch
+    {
+        Outer<int>.Result.A => "a",
+        Outer<int>.Result.B => "b"
+    };
+}
